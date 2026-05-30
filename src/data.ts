@@ -6,7 +6,7 @@ export const FOUNDER_IMAGE_PATH = "/src/assets/images/founder_hero_1780135630988
 export const zobmiData: ZobmiData = {
   company: {
     name: "Zobmi Digi Services",
-    tagline: "Securing, Building, and Scaling Digital Businesses in Africa",
+    tagline: "Zobmi Digi Services",
     founder: "Miracle Okpara",
     position: [
       "Cybersecurity Consultant",
