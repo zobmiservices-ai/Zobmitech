@@ -4,6 +4,9 @@ import { Search, BookOpen, Clock, User, ArrowLeft, ArrowRight, Share2, Globe, He
 import { BlogPost, ZobmiData } from '../types';
 import { blogPosts } from '../data';
 
+const aiDashboardImg = new URL('../assets/images/ai_dashboard_1780138061215.png', import.meta.url).href;
+const webDevSpeedImg = new URL('../assets/images/web_dev_speed_1780138080260.png', import.meta.url).href;
+
 interface BlogProps {
   data: ZobmiData;
   theme: 'morning' | 'night';
@@ -33,13 +36,13 @@ export default function Blog({ data, theme }: BlogProps) {
   const getBlogImage = (id: number) => {
     switch (id) {
       case 1:
-        return "https://picsum.photos/seed/phishing-alert/600/400";
+        return "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80";
       case 2:
-        return "/src/assets/images/ai_dashboard_1780138061215.png";
+        return aiDashboardImg;
       case 3:
-        return "/src/assets/images/web_dev_speed_1780138080260.png";
+        return webDevSpeedImg;
       case 4:
-        return "https://picsum.photos/seed/cloud-safety/600/400";
+        return "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80";
       default:
         return `https://picsum.photos/seed/blog-${id}/600/400`;
     }

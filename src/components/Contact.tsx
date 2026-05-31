@@ -19,6 +19,8 @@ export default function Contact({ data, theme }: ContactProps) {
   const [msgSuccess, setMsgSuccess] = useState(false);
 
   // Consultation booking scheduler states
+  const [bookName, setBookName] = useState('');
+  const [bookEmail, setBookEmail] = useState('');
   const [bookDomain, setBookDomain] = useState('Cybersecurity Consulting');
   const [bookDate, setBookDate] = useState('');
   const [bookTime, setBookTime] = useState('10:00 AM WAT');
@@ -45,18 +47,66 @@ export default function Contact({ data, theme }: ContactProps) {
   // Handle live Calendar appointment Booking
   const handleBookingSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!bookDate) return;
+    if (!bookDate || !bookName || !bookEmail) return;
     setIsBooking(true);
-    setTimeout(() => {
-      setBookingPass({
-        id: `ZM-CNS-${Math.floor(1000 + Math.random() * 9000)}`,
+
+    const sessionId = `ZM-CNS-${Math.floor(1000 + Math.random() * 9000)}`;
+    const googleMeet = `https://meet.google.com/zobmi-digi-${Math.floor(123 + Math.random() * 876)}`;
+
+    // 1. Silent asynchronous API post to Formspree
+    fetch('https://formspree.io/f/xzolkpqr', { // generalized formspree receiver
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        name: bookName,
+        email: bookEmail,
         domain: bookDomain,
         date: bookDate,
         time: bookTime,
-        meetingLink: `https://meet.google.com/zobmi-digi-${Math.floor(123 + Math.random() * 876)}`,
-        advisor: "Miracle Okpara"
+        notes: bookNotes,
+        _to: 'zobmiservices@gmail.com'
+      })
+    }).catch(() => {});
+
+    // 2. Draft direct Mailto URL for native email triggers
+    const mailtoSubject = encodeURIComponent(`[CONFIRMED] Consultation Booking Request: ${bookDomain}`);
+    const mailtoBody = encodeURIComponent(
+      `Hello Miracle,\n\n` +
+      `I have just booked a digital consultation with Zobmi Digi Services. Here are my session specifics:\n\n` +
+      `-------------------------------------------\n` +
+      `Client Name: ${bookName}\n` +
+      `Client Email: ${bookEmail}\n` +
+      `Session ID: ${sessionId}\n` +
+      `Consultation Area: ${bookDomain}\n` +
+      `Schedule Selection: ${bookDate} @ ${bookTime}\n` +
+      `Scope description: ${bookNotes || 'No notes specified'}\n` +
+      `Meeting Room: ${googleMeet}\n` +
+      `-------------------------------------------\n\n` +
+      `Please let me know if this date aligns. Thank you!`
+    );
+
+    const mailtoLink = `mailto:zobmiservices@gmail.com?subject=${mailtoSubject}&body=${mailtoBody}`;
+
+    setTimeout(() => {
+      setBookingPass({
+        id: sessionId,
+        clientName: bookName,
+        clientEmail: bookEmail,
+        domain: bookDomain,
+        date: bookDate,
+        time: bookTime,
+        notes: bookNotes,
+        meetingLink: googleMeet,
+        advisor: "Miracle Okpara",
+        mailtoLink: mailtoLink
       });
       setIsBooking(false);
+      
+      // Reset input form
+      setBookName('');
+      setBookEmail('');
+      setBookNotes('');
     }, 1500);
   };
 
@@ -217,7 +267,7 @@ export default function Contact({ data, theme }: ContactProps) {
                       Consultation Booked!
                     </h3>
                     <p className="text-xs text-gray-400 mt-2 max-w-sm mx-auto">
-                      Your high-tier video session with Miracle Okpara is synchronized under secure parameters.
+                      Your High-Tier session is synchronized. Please click "Send Email Copy" to notify Miracle Okpara automatically.
                     </p>
                   </div>
 
@@ -226,14 +276,16 @@ export default function Contact({ data, theme }: ContactProps) {
                     theme === 'night' ? 'bg-[#0A192F] border-[#00C9A7]/25' : 'bg-amber-50/50 border-amber-300'
                   }`}>
                     <div className="flex items-center justify-between border-b pb-2 border-slate-500/10">
-                      <span className="text-gray-400">SESSION ID</span>
+                      <span className="text-gray-400 font-bold">SESSION ID</span>
                       <span className="font-bold text-[#00C9A7]">{bookingPass.id}</span>
                     </div>
 
                     <div className="space-y-2 text-xs normal-case">
-                      <p className="text-gray-400 leading-none">Consulting Scope: <strong className="text-white uppercase font-mono text-[11px]">{bookingPass.domain}</strong></p>
-                      <p className="text-gray-400 leading-none">Advisor Assigned: <strong className="text-white">{bookingPass.advisor}</strong></p>
-                      <p className="text-gray-400 leading-none">Date / Time: <strong className="text-white">{bookingPass.date} @ {bookingPass.time}</strong></p>
+                      <p className="text-gray-400 leading-none">Client Name: <strong className="text-white uppercase font-sans text-[11px]">{bookingPass.clientName}</strong></p>
+                      <p className="text-gray-400 leading-none">Client Email: <strong className="text-white font-sans text-[11px]">{bookingPass.clientEmail}</strong></p>
+                      <p className="text-gray-400 leading-none">Scope Area: <strong className="text-[#00C9A7] uppercase font-mono text-[11px]">{bookingPass.domain}</strong></p>
+                      <p className="text-gray-400 leading-none">Lead Consultant: <strong className="text-white">{bookingPass.advisor}</strong></p>
+                      <p className="text-gray-400 leading-none">Schedule Preference: <strong className="text-white">{bookingPass.date} @ {bookingPass.time}</strong></p>
                     </div>
 
                     <div className="border-t border-dashed pt-4 border-slate-500/10 text-left">
@@ -249,14 +301,28 @@ export default function Contact({ data, theme }: ContactProps) {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => setBookingPass(null)}
-                    className={`w-full py-3 rounded-xl font-bold uppercase text-xs tracking-wider cursor-pointer ${
-                      theme === 'night' ? 'bg-slate-800 hover:bg-slate-700' : 'bg-slate-100 hover:bg-slate-200'
-                    }`}
-                  >
-                    Close & Return
-                  </button>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <a
+                      href={bookingPass.mailtoLink}
+                      className={`flex-1 py-3 px-4 rounded-xl font-bold uppercase text-xs tracking-wider flex items-center justify-center space-x-2 transition-all duration-300 cursor-pointer ${
+                        theme === 'night'
+                          ? 'bg-[#00C9A7] text-[#0A192F] hover:bg-emerald-400'
+                          : 'bg-[#2563EB] text-white hover:bg-blue-700'
+                      }`}
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>Send Email Copy</span>
+                    </a>
+
+                    <button
+                      onClick={() => setBookingPass(null)}
+                      className={`py-3 px-6 rounded-xl font-bold uppercase text-xs tracking-wider border cursor-pointer ${
+                        theme === 'night' ? 'bg-slate-800 hover:bg-slate-700 border-slate-700' : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-gray-700'
+                      }`}
+                    >
+                      Close
+                    </button>
+                  </div>
                 </motion.div>
               ) : (
                 // Live Consultation core schedulers Input form
@@ -268,6 +334,41 @@ export default function Contact({ data, theme }: ContactProps) {
                     <p className="text-xs text-gray-400 mt-1">
                       Directly coordinates video or physical planning queries regarding Cybersecurity audits, responsive Web store design, or custom AI automations with Miracle Okpara.
                     </p>
+                  </div>
+
+                  {/* Synchronized Personal Credentials Input Fields */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 font-mono">Your Full Name</label>
+                      <input
+                        required
+                        type="text"
+                        placeholder="e.g. Ibrahim Adesope"
+                        value={bookName}
+                        onChange={(e) => setBookName(e.target.value)}
+                        className={`w-full px-4 py-3 rounded-xl border text-xs outline-hidden ${
+                          theme === 'night'
+                            ? 'bg-[#0A192F] border-slate-700 text-white focus:border-[#00C9A7]'
+                            : 'bg-slate-50 border-gray-200 text-gray-800 focus:border-[#2563EB]'
+                        }`}
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 text-left">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 font-mono">Your Email Address</label>
+                      <input
+                        required
+                        type="email"
+                        placeholder="e.g. ibrahim@company.com"
+                        value={bookEmail}
+                        onChange={(e) => setBookEmail(e.target.value)}
+                        className={`w-full px-4 py-3 rounded-xl border text-xs outline-hidden ${
+                          theme === 'night'
+                            ? 'bg-[#0A192F] border-slate-700 text-white focus:border-[#00C9A7]'
+                            : 'bg-slate-50 border-gray-200 text-gray-800 focus:border-[#2563EB]'
+                        }`}
+                      />
+                    </div>
                   </div>
 
                   {/* Consultation Scope selection */}

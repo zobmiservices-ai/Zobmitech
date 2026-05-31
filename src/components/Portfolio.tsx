@@ -3,6 +3,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Search, FolderGit2, AppWindow, ArrowUpRight, Code, ShieldCheck, HelpCircle } from 'lucide-react';
 import { Project, ZobmiData } from '../types';
 
+const webDevSpeedImg = new URL('../assets/images/web_dev_speed_1780138080260.png', import.meta.url).href;
+const cybersecShieldImg = new URL('../assets/images/cybersec_shield_1780138043926.png', import.meta.url).href;
+const aiDashboardImg = new URL('../assets/images/ai_dashboard_1780138061215.png', import.meta.url).href;
+
 interface PortfolioProps {
   data: ZobmiData;
   theme: 'morning' | 'night';
@@ -32,15 +36,15 @@ export default function Portfolio({ data, theme }: PortfolioProps) {
   const getProjectImage = (id: number) => {
     switch (id) {
       case 1:
-        return "/src/assets/images/web_dev_speed_1780138080260.png";
+        return webDevSpeedImg;
       case 2:
-        return "/src/assets/images/cybersec_shield_1780138043926.png";
+        return cybersecShieldImg;
       case 3:
-        return "/src/assets/images/ai_dashboard_1780138061215.png";
+        return aiDashboardImg;
       case 4:
-        return "https://picsum.photos/seed/healthcloud/600/400";
+        return "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=600&q=80";
       case 5:
-        return "https://picsum.photos/seed/cmsportal/600/400";
+        return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80";
       default:
         return `https://picsum.photos/seed/project-${id}/600/400`;
     }

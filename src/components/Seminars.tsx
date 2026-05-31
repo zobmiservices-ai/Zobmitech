@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, Users, Target, BookOpen, Send, CheckCircle2, Ticket, ChevronRight, MapPin } from 'lucide-react';
 import { Seminar, ZobmiData } from '../types';
 
+const cybersecShieldImg = new URL('../assets/images/cybersec_shield_1780138043926.png', import.meta.url).href;
+
 interface SeminarsProps {
   data: ZobmiData;
   theme: 'morning' | 'night';
@@ -64,18 +66,54 @@ export default function Seminars({ data, theme }: SeminarsProps) {
     if (!fullName || !emailAddress || !selectedSeminar) return;
 
     setIsSubmitting(true);
-    
-    setTimeout(() => {
-      const schedule = getExtendedMeta(selectedSeminar);
-      setTicketDetails({
-        id: `ZB-${Math.floor(100000 + Math.random() * 900000)}`,
+    const schedule = getExtendedMeta(selectedSeminar);
+    const passId = `ZB-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    // 1. Silent asynchronous API post to Formspree
+    fetch('https://formspree.io/f/xzolkpqr', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        passId,
         name: fullName,
         email: emailAddress,
         event: selectedSeminar,
         date: schedule.date,
         time: schedule.time,
         venue: schedule.mode,
-        code: `ZOBMI-${selectedSeminar.slice(0, 3).toUpperCase()}-2026`
+        _to: 'zobmiservices@gmail.com'
+      })
+    }).catch(() => {});
+
+    // 2. Formulate deep click mailto link
+    const mailtoSubject = encodeURIComponent(`[RSVP] Tech Seminar Spot Reservation: ${selectedSeminar}`);
+    const mailtoBody = encodeURIComponent(
+      `Hello Miracle,\n\n` +
+      `I have registered to participate in the upcoming seminar/workshop by Zobmi Digi Services. Here are my ticket parameters:\n\n` +
+      `-------------------------------------------\n` +
+      `Event Title: ${selectedSeminar}\n` +
+      `Attendee Name: ${fullName}\n` +
+      `Attendee Email: ${emailAddress}\n` +
+      `Seat Pass ID: ${passId}\n` +
+      `Event Date/Time: ${schedule.date} @ ${schedule.time}\n` +
+      `Event Mode/Venue: ${schedule.mode}\n` +
+      `-------------------------------------------\n\n` +
+      `See you there!`
+    );
+
+    const mailtoLink = `mailto:zobmiservices@gmail.com?subject=${mailtoSubject}&body=${mailtoBody}`;
+
+    setTimeout(() => {
+      setTicketDetails({
+        id: passId,
+        name: fullName,
+        email: emailAddress,
+        event: selectedSeminar,
+        date: schedule.date,
+        time: schedule.time,
+        venue: schedule.mode,
+        code: `ZOBMI-${selectedSeminar.slice(0, 3).toUpperCase()}-2026`,
+        mailtoLink: mailtoLink
       });
       setIsSubmitting(false);
       // Reset form variables
@@ -88,11 +126,11 @@ export default function Seminars({ data, theme }: SeminarsProps) {
   const getSeminarImage = (idx: number) => {
     switch (idx) {
       case 0:
-        return "/src/assets/images/cybersec_shield_1780138043926.png";
+        return cybersecShieldImg;
       case 1:
-        return "https://picsum.photos/seed/workplace-ai/600/400";
+        return "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80";
       case 2:
-        return "https://picsum.photos/seed/small-business-security/600/400";
+        return "https://images.unsplash.com/photo-1542744094-3a31f103e35f?auto=format&fit=crop&w=600&q=80";
       default:
         return `https://picsum.photos/seed/seminar-${idx}/600/400`;
     }
@@ -339,14 +377,28 @@ export default function Seminars({ data, theme }: SeminarsProps) {
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => setSelectedSeminar(null)}
-                      className={`w-full py-3 rounded-xl font-bold uppercase text-xs tracking-wider cursor-pointer ${
-                        theme === 'night' ? 'bg-slate-800 hover:bg-slate-700' : 'bg-slate-100 hover:bg-slate-200'
-                      }`}
-                    >
-                      Done & Close
-                    </button>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <a
+                        href={ticketDetails.mailtoLink}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold uppercase text-xs tracking-wider flex items-center justify-center space-x-2 transition-all duration-300 cursor-pointer ${
+                          theme === 'night'
+                            ? 'bg-[#00C9A7] text-[#0A192F] hover:bg-emerald-400'
+                            : 'bg-[#2563EB] text-white hover:bg-blue-700'
+                        }`}
+                      >
+                        <Send className="w-4 h-4" />
+                        <span>Send Email Copy</span>
+                      </a>
+
+                      <button
+                        onClick={() => setSelectedSeminar(null)}
+                        className={`py-3 px-6 rounded-xl font-bold uppercase text-xs tracking-wider border cursor-pointer ${
+                          theme === 'night' ? 'bg-slate-800 hover:bg-slate-700 border-slate-700' : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-gray-700'
+                        }`}
+                      >
+                        Close
+                      </button>
+                    </div>
                   </motion.div>
                 ) : (
                   // RSVP input layout Form

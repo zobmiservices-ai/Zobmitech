@@ -1,7 +1,7 @@
 import { ZobmiData, BlogPost } from './types';
 
 // Export the generated founder image path
-export const FOUNDER_IMAGE_PATH = "/src/assets/images/founder_hero_1780135630988.png";
+export const FOUNDER_IMAGE_PATH = "/src/assets/images/founder_hero_new_1780211325490.png";
 
 export const zobmiData: ZobmiData = {
   company: {

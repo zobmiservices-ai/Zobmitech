@@ -1,22 +1,11 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { ShieldCheck, Code, Cpu, TrendingUp, ArrowRight } from 'lucide-react';
 import { ZobmiData } from '../types';
-import { FOUNDER_IMAGE_PATH } from '../data';
 import CyberCanvas from './CyberCanvas';
 import CyberGrid from './CyberGrid';
 import { techAudio } from '../utils/audio';
 
-const founderHero480Webp = new URL('../assets/images/founder_hero_1780135630988-480.webp', import.meta.url).href;
-const founderHero768Webp = new URL('../assets/images/founder_hero_1780135630988-768.webp', import.meta.url).href;
-const founderHero1024Webp = new URL('../assets/images/founder_hero_1780135630988-1024.webp', import.meta.url).href;
-const founderHero1200Webp = new URL('../assets/images/founder_hero_1780135630988-1200.webp', import.meta.url).href;
-
-const founderHero480Png = new URL('../assets/images/founder_hero_1780135630988-480.png', import.meta.url).href;
-const founderHero768Png = new URL('../assets/images/founder_hero_1780135630988-768.png', import.meta.url).href;
-const founderHero1024Png = new URL('../assets/images/founder_hero_1780135630988-1024.png', import.meta.url).href;
-const founderHero1200Png = new URL('../assets/images/founder_hero_1780135630988-1200.png', import.meta.url).href;
-
-const founderHeroOriginal = new URL('../assets/images/founder_hero_1780135630988.png', import.meta.url).href;
+const founderHeroOriginal = new URL('../assets/images/founder_hero_new_1780211325490.png', import.meta.url).href;
 
 interface HeroProps {
   data: ZobmiData;
@@ -294,31 +283,16 @@ export default function Hero({ data, theme, onBookClick, onExploreClick }: HeroP
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="absolute bottom-0 right-0 w-[95%] sm:w-[85%] lg:w-[110%] h-full z-10 flex items-end justify-center pointer-events-none"
+            className="absolute bottom-0 left-0 right-0 sm:left-auto sm:right-0 mx-auto sm:mx-0 w-[90%] sm:w-[85%] lg:w-[110%] h-full z-10 flex items-end justify-center pointer-events-none"
           >
             <div className="relative w-full h-[95%] sm:h-full select-none overflow-hidden rounded-b-2xl">
               {/* Founder real responsive image asset pipeline using picture/srcset */}
-              <picture className="w-full h-full select-none pointer-events-none">
-                {/* Modern Next-Gen WebP optimization formats for variable devices */}
-                <source type="image/webp" media="(max-width: 480px)" srcSet={founderHero480Webp} />
-                <source type="image/webp" media="(max-width: 768px)" srcSet={founderHero768Webp} />
-                <source type="image/webp" media="(max-width: 1024px)" srcSet={founderHero1024Webp} />
-                <source type="image/webp" media="(max-width: 1200px)" srcSet={founderHero1200Webp} />
-                
-                {/* Standard backup PNG formats */}
-                <source type="image/png" media="(max-width: 480px)" srcSet={founderHero480Png} />
-                <source type="image/png" media="(max-width: 768px)" srcSet={founderHero768Png} />
-                <source type="image/png" media="(max-width: 1024px)" srcSet={founderHero1024Png} />
-                <source type="image/png" media="(max-width: 1200px)" srcSet={founderHero1200Png} />
-
-                {/* Legacy high-res fallback image */}
-                <img
-                  src={founderHeroOriginal}
-                  alt="Miracle Okpara - Zobmi Digi Services Founder"
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-contain object-bottom select-none pointer-events-none"
-                />
-              </picture>
+              <img
+                src={founderHeroOriginal}
+                alt="Miracle Okpara - Zobmi Digi Services Founder"
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-contain object-bottom select-none pointer-events-none"
+              />
 
               {/* Advanced Gradient Overlay logic to blend non-transparent image edges flawlessly into the dark space */}
               {theme === 'night' ? (

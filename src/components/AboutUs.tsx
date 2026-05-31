@@ -2,6 +2,8 @@ import { motion } from 'motion/react';
 import { Target, Compass, Award, ShieldCheck, HeartHandshake, Smile, CheckSquare } from 'lucide-react';
 import { ZobmiData } from '../types';
 
+const founderHeroOriginal = new URL('../assets/images/founder_hero_new_1780211325490.png', import.meta.url).href;
+
 interface AboutUsProps {
   data: ZobmiData;
   theme: 'morning' | 'night';
@@ -194,7 +196,7 @@ export default function AboutUs({ data, theme }: AboutUsProps) {
             <div className="md:col-span-5 text-left flex flex-col sm:flex-row items-center gap-6">
               <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-emerald-500/35 flex-none relative group bg-slate-900 shadow-sm">
                 <img
-                  src="/src/assets/images/founder_hero_1780135630988.png"
+                  src={founderHeroOriginal}
                   alt="Miracle Okpara"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   referrerPolicy="no-referrer"
